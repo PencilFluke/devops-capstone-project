@@ -1,3 +1,12 @@
+---
+name: User Story
+about: User Story template
+title: ''
+labels: ''
+assignees: PencilFluke
+
+---
+
 **As a** [role]  
 **I need** [function]  
 **So that** [benefit]  
