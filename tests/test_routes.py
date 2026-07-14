@@ -158,7 +158,7 @@ class TestAccountService(TestCase):
     def test_update_account(self):
         """It should Update an Account"""
         test_account = AccountFactory()
-        response = self.client.post(BASE_URL,json = test_account.serialize())
+        response = self.client.post(BASE_URL, json=test_account.serialize())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         new_account = response.get_json()
@@ -166,3 +166,27 @@ class TestAccountService(TestCase):
         response = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account)
         updated_account = response.get_json()
         self.assertEqual(updated_account["name"], "New Name")
+
+    def test_update_account_not_found(self):
+        """It should not Update an account and throw 404 if not found"""
+        test_account = AccountFactory().serialize()
+        response = self.client.put(f"{BASE_URL}/5", json=test_account)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_account(self):
+        """It should Delete an Account"""
+        account = self._create_accounts(1)[0]
+        response = self.client.delete(f"{BASE_URL}/{account.id}")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_account_not_found(self):
+        """It should not Delete an Account and throw 404 if not found"""
+        response = self.client.delete(f"{BASE_URL}/5")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method call"""
+        response = self.client.delete(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        response = self.client.put(BASE_URL)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
